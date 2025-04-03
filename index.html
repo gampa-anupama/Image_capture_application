@@ -1,0 +1,226 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Detection - Live Feedback</title>
+    <script defer src="https://cdn.jsdelivr.net/npm/@mediapipe/face_detection"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow-models/face-detection"></script>
+
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; }
+        video { border: 2px solid black; border-radius: 10px; width: 640px; height: 480px; }
+        #status { margin-top: 10px; font-size: 20px; font-weight: bold; color: red; }
+        #captureBtn { margin-top: 10px; padding: 10px 20px; font-size: 16px; background-color: #4CAF50; color: white; border: none; cursor: pointer; border-radius: 5px; }
+        #captureBtn:disabled { background-color: gray; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <h2>Face Detection (Live Feedback)</h2>
+    <video id="video" autoplay playsinline></video>
+    <p id="status">🔴 Initializing...</p>
+    <button id="captureBtn" disabled>Capture Image</button>
+
+    <script>
+        const video = document.getElementById("video");
+        const statusMessage = document.getElementById("status");
+        const captureBtn = document.getElementById("captureBtn");
+
+        let detector;
+
+        async function setupCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                video.onloadedmetadata = () => {
+                    console.log("✅ Camera loaded successfully");
+                    video.play();
+                };
+            } catch (error) {
+                console.error("❌ Camera access error:", error);
+                alert("Error: Camera access denied. Please allow camera permissions.");
+            }
+        }
+
+        async function loadModel() {
+            detector = await faceDetection.createDetector(faceDetection.SupportedModels.MediaPipeFaceDetector, {
+                runtime: "tfjs"
+            });
+            console.log("✅ Face detection model loaded!");
+        }
+
+        async function detectFace() {
+            if (!detector) return;
+
+            const faces = await detector.estimateFaces(video);
+
+            if (faces.length === 0) {
+                updateMessage("❌ No face detected (Blank screen)", "red");
+                captureBtn.disabled = true;
+            } else {
+                updateMessage("✅ Face detected - Ready to capture!", "green");
+                captureBtn.disabled = false;
+            }
+
+            requestAnimationFrame(detectFace);
+        }
+
+        function updateMessage(text, color) {
+            statusMessage.innerText = text;
+            statusMessage.style.color = color;
+        }
+
+        captureBtn.addEventListener("click", () => {
+            let canvas = document.createElement("canvas");
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            let ctx = canvas.getContext("2d");
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageDataURL = canvas.toDataURL("image/png");
+            console.log("📸 Captured Image:", imageDataURL);
+            alert("✅ Image Captured!");
+        });
+
+        (async () => {
+            await setupCamera();
+            await loadModel();
+            detectFace();
+        })();
+    </script>
+</body>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Detection - Live Feedback</title>
+    <script defer src="https://cdn.jsdelivr.net/npm/@mediapipe/face_detection"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow-models/face-detection"></script>
+
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; }
+        video { border: 2px solid black; border-radius: 10px; width: 640px; height: 480px; }
+        #status { margin-top: 10px; font-size: 20px; font-weight: bold; color: red; }
+        #captureBtn { margin-top: 10px; padding: 10px 20px; font-size: 16px; background-color: #4CAF50; color: white; border: none; cursor: pointer; border-radius: 5px; }
+        #captureBtn:disabled { background-color: gray; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <h2>Face Detection (Live Feedback)</h2>
+    <video id="video" autoplay playsinline></video>
+    <p id="status">🔴 Initializing...</p>
+    <button id="captureBtn" disabled>Capture Image</button>
+
+    <script>
+        const video = document.getElementById("video");
+        const statusMessage = document.getElementById("status");
+        const captureBtn = document.getElementById("captureBtn");
+
+        let detector;
+
+        async function setupCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                video.onloadedmetadata = () => {
+                    console.log("✅ Camera loaded successfully");
+                    video.play();
+                };
+            } catch (error) {
+                console.error("❌ Camera access error:", error);
+                alert("Error: Camera access denied. Please allow camera permissions.");
+            }
+        }
+
+        async function loadModel() {
+            detector = await faceDetection.createDetector(faceDetection.SupportedModels.MediaPipeFaceDetector, {
+                runtime: "tfjs"
+            });
+            console.log("✅ Face detection model loaded!");
+        }
+
+        async function detectFace() {
+            if (!detector) return;
+
+            const faces = await detector.estimateFaces(video);
+            if (faces.length === 0) {
+                updateMessage("❌ No face detected (Blank screen)", "red");
+                captureBtn.disabled = true;
+                requestAnimationFrame(detectFace);
+                return;
+            }
+
+            const lightingStatus = checkLighting();
+            if (lightingStatus === "shadow") {
+                updateMessage("❌ Shadow detected on face. Adjust lighting.", "red");
+                captureBtn.disabled = true;
+            } else if (lightingStatus === "overexposed") {
+                updateMessage("❌ Too much lighting! Reduce brightness.", "red");
+                captureBtn.disabled = true;
+            } else {
+                updateMessage("✅ Face detected - Ready to capture!", "green");
+                captureBtn.disabled = false;
+            }
+
+            requestAnimationFrame(detectFace);
+        }
+
+        function checkLighting() {
+            const canvas = document.createElement("canvas");
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            let totalBrightness = 0;
+            let pixelCount = imageData.data.length / 4;
+
+            for (let i = 0; i < imageData.data.length; i += 4) {
+                const r = imageData.data[i];
+                const g = imageData.data[i + 1];
+                const b = imageData.data[i + 2];
+                const brightness = (r + g + b) / 3;
+                totalBrightness += brightness;
+            }
+
+            const avgBrightness = totalBrightness / pixelCount;
+
+            console.log("🔆 Avg Brightness:", avgBrightness);
+
+            if (avgBrightness < 50) return "shadow";  // Too dark
+            if (avgBrightness > 210) return "overexposed"; // Too bright
+            return "normal"; // Good lighting
+        }
+
+        function updateMessage(text, color) {
+            statusMessage.innerText = text;
+            statusMessage.style.color = color;
+        }
+
+        captureBtn.addEventListener("click", () => {
+            let canvas = document.createElement("canvas");
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            let ctx = canvas.getContext("2d");
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageDataURL = canvas.toDataURL("image/png");
+            console.log("📸 Captured Image:", imageDataURL);
+            alert("✅ Image Captured!");
+        });
+
+        (async () => {
+            await setupCamera();
+            await loadModel();
+            detectFace();
+        })();
+    </script>
+</body>
+</html>
