@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Face Tracking</title>
+    <style>
+      .status {
+        font-size: 18px;
+        font-weight: bold;
+      }
+      .good {
+        color: green;
+      }
+      .bad {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Face Tracking System</h1>
+    <video id="video" autoplay></video>
+    <canvas id="canvas" style="display: none"></canvas>
+    <!-- 🛠 Fixed: Added canvas -->
+    <p id="status" class="status">Loading...</p>
+    <button onclick="captureImage()">Capture Image</button>
+
+    <!-- TensorFlow & BlazeFace -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
